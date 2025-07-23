@@ -1,4 +1,5 @@
-# Imports 
+# Subscribe to Code with Josh on YouTube
+# Check out my Python Newsletter: The Nerd Nook at www.thenerdnook.io
 import whisper
 import sounddevice as sd
 import numpy as np
@@ -57,7 +58,6 @@ class Message:
         self.message_type = message_type
 
 def record_audio(model):
-    """Record audio and return transcribed text using Whisper"""
     try:
         sample_rate = 16000
         duration = 5  
@@ -85,7 +85,6 @@ def record_audio(model):
 
 
 def play_audio(file_path):
-    """Play audio file using system default player and wait for completion"""
     try:
         import platform
         import subprocess
@@ -104,7 +103,6 @@ def play_audio(file_path):
 
 
 def print_message(message: Message):
-    """Print a message with appropriate formatting"""
     if message.message_type == "system":
         print(f"\n {message.user_name}: {message.text}")
     elif message.message_type == "ai":
@@ -118,10 +116,7 @@ def main():
     
     openai_client = create_openai_client(OPENAI_API_KEY)
     murf_client = create_murf_client(MURF_API_KEY)
-    
-    print("Loading model...")
     whisper_model = whisper.load_model("base")
-    print("Model loaded!")
     
     chat_history = []
     
