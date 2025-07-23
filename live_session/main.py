@@ -59,20 +59,16 @@ class Message:
 def record_audio(model):
     """Record audio and return transcribed text using Whisper"""
     try:
-        # Audio recording parameters
         sample_rate = 16000
-        duration = 5  # seconds
+        duration = 5  
         
         print("Listening... (speak now)")
         
-        # Record audio
         audio_data = sd.rec(int(sample_rate * duration), samplerate=sample_rate, channels=1, dtype=np.float32)
-        sd.wait()  # Wait until recording is finished
+        sd.wait()  
         
-        # Convert to the format Whisper expects
         audio_data = audio_data.flatten().astype(np.float32)
         
-        # Transcribe with Whisper
         result = model.transcribe(audio_data)
         text = result["text"].strip()
         
@@ -95,7 +91,7 @@ def play_audio(file_path):
         import subprocess
         system = platform.system()
         
-        if system == "Darwin":  # macOS
+        if system == "Darwin": 
             subprocess.run(["afplay", file_path], check=True)
         elif system == "Linux":
             subprocess.run(["aplay", file_path], check=True)
@@ -120,11 +116,9 @@ def main():
     print(" Voice chat - just speak!")
     print("=" * 50)
     
-    # Initialize clients
     openai_client = create_openai_client(OPENAI_API_KEY)
     murf_client = create_murf_client(MURF_API_KEY)
     
-    # Load Whisper model (this will download on first run)
     print("Loading model...")
     whisper_model = whisper.load_model("base")
     print("Model loaded!")
@@ -133,33 +127,27 @@ def main():
     
     while True:
         try:
-            # Always use voice input
             user_input = record_audio(whisper_model)
             
             if not user_input:
                 print(" Speak again...")
                 continue
             
-            # Add user message to history and display
             user_message = Message("You", user_input, "user")
             chat_history.append(user_message)
             print_message(user_message)
             
-            # Get AI response
             instructions = "You are a helpful assistant. Provide short and overly sarcastic, slightly offensive responses."
             ai_response = get_openai_response(openai_client, user_input, instructions)
             
-            # Add AI message to history and display
             ai_message = Message("AI", ai_response, "ai")
             chat_history.append(ai_message)
             print_message(ai_message)
             
-            # Convert to speech and play
             try:
                 file_path = os.path.abspath("audio.mp3")
                 stream_text_to_speech(murf_client, ai_response, file_path)
                 
-                # Play audio and wait for completion
                 play_audio(file_path)
                 
             except Exception as e:
